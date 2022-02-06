@@ -24,3 +24,7 @@ https://github.com/uchan-nos/mikanos/blob/osbook_day02b/MikanLoaderPkg/Main.c
 
 ## EDK II
 - ドキュメント  https://github.com/tianocore/tianocore.github.io/wiki/EDK-II-Documents
+
+
+## 関係ない記事
+https://zhenzhongxu.com/the-four-innovation-phases-of-netflixs-trillions-scale-real-time-data-infrastructure-2370938d7f01
