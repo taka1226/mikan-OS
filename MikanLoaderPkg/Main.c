@@ -159,26 +159,19 @@ EFI_STATUS EFIAPI UefiMain(
   Print(L"map->map_key = %08lx\n", memmap.map_key);
   EFI_STATUS status;
   status = gBS->ExitBootServices(image_handle, memmap.map_key);
-  Print(L"AAAA\n");
-  Print(L"%r\n", status);
   if (EFI_ERROR(status)){
       status = GetMemoryMap(&memmap);
-      Print(L"%r\n", status);
       if (EFI_ERROR(status)){
           Print(L"failed to get memory map: %r\n", status);
           while(1);
       }
-
-      //Print(L"map->map_key = %08lx\n", memmap.map_key);
       status = gBS->ExitBootServices(image_handle, memmap.map_key);
-      //Print(L"%r\n", status);
       if (EFI_ERROR(status)){
           Print(L"Could not exit boot service: %r\n", status);
           while (1);
       }
   }
 
-  Print(L"AAAA\n");
   //なんで24足してる?
   UINT64 entry_addr = *(UINT64*)(kernel_base_addr + 24);
 
