@@ -6,6 +6,8 @@ source edksetup.sh
 ## qemu で実行する
 ```bash
 $HOME/osbook/devenv/run_qemu.sh Loader.efi
+
+$HOME/osbook/devenv/run_qemu.sh Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi $HOME/workspace/mikanos/kernel/kernel.elf
 ```
 
 
@@ -17,8 +19,11 @@ cp /home/takahiro/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi $HOME/w
 ## kernel の コンパイル・リンク
 
 ```bash
-clang++ -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone -fno-exceptions -fno-rtti -std=c++17 -c main.cpp
-ld.lld --entry KernelMain -z norelro --image-base 0x100000 --static -z separate-code -o kernel.elf main.o
+source $HOME/osbook/devenv/buildenv.sh
+
+clang++ $CPPFLAGS -O2 --target=x86_64-elf -fno-exceptions -ffreestanding -c main.cpp
+
+ld.lld $LDFLAGS --entry KernelMain -z norelro --image-base 0x100000 --static -z separate-code -o kernel.elf main.o
 ```
 
 > 必ずホストOSでコンパイル・リンクを行うこと(virtual box の方ではなく)
