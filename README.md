@@ -5,8 +5,6 @@ source edksetup.sh
 
 ## qemu で実行する
 ```bash
-$HOME/osbook/devenv/run_qemu.sh Loader.efi
-
 $HOME/osbook/devenv/run_qemu.sh Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi $HOME/workspace/mikanos/kernel/kernel.elf
 ```
 
