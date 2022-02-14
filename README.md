@@ -18,10 +18,7 @@ cp /home/takahiro/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi $HOME/w
 
 ```bash
 source $HOME/osbook/devenv/buildenv.sh
-
-clang++ $CPPFLAGS -O2 --target=x86_64-elf -fno-exceptions -ffreestanding -c main.cpp
-
-ld.lld $LDFLAGS --entry KernelMain -z norelro --image-base 0x100000 --static -z separate-code -o kernel.elf main.o
+make
 ```
 
 > 必ずホストOSでコンパイル・リンクを行うこと(virtual box の方ではなく)
