@@ -1,9 +1,9 @@
-## 設定ファイルを読み込む
+## 設定ファイルを読み込む(OS 起動前)
 ```bash
 source edksetup.sh
 ```
 
-## qemu で実行する
+## qemu でOSを起動する
 ```bash
 $HOME/osbook/devenv/run_qemu.sh Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi $HOME/workspace/mikanos/kernel/kernel.elf
 ```
