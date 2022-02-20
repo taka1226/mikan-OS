@@ -36,3 +36,18 @@ public:
     virtual void Write(int x, int y, const PixelColor& c) override;
 };
 // #@@range_end(pixel_writer_def)
+
+// #@@range_begin(vector2D)
+template <typename T>
+struct Vector2D {
+    T x, y;
+};
+// #@@range_end(vector2D)
+
+// #@@range_begin(FillRectangle)
+void FillRectangle(PixelWriter& writer, const Vector2D<int>& pos, const Vector2D<int>& size, const PixelColor& c);
+// #@@range_end(FillRectangle)
+
+// #@@range_begin(drawRectangle)
+void DrawRectangle(PixelWriter& writer, const Vector2D<int>& pos, const Vector2D<int>& size, const PixelColor& c);
+// #@@range_end(drawRectangle)
