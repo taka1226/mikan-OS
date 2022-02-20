@@ -1,2 +1,12 @@
 kernel/*.o
+kernel/*.d
+
+kernel/usb/*.o
+kernel/usb/*.d
+
+kernel/usb/classdriver/*.o
+kernel/usb/classdriver/*.d
+
+kernel/usb/xhci/*.o
+kernel/usb/xhci/*.d
 kernel/kernel.elf
