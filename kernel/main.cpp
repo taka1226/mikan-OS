@@ -14,6 +14,9 @@
 #include "usb/classdriver/mouse.hpp"
 #include "usb/xhci/xhci.hpp"
 #include "usb/xhci/trb.hpp"
+#include "interrupt.hpp"
+
+#include "asmfunc.h"
 
 void operator delete(void* obj) noexcept {
 }
@@ -64,6 +67,19 @@ void SwitchEhci2Xhci(const pci::Device& xhc_dev){
     pci::WriteConfReg(xhc_dev, 0xd0, ehci2xhci_ports);
     Log(kDebug, "SwitchEhci2Xhci: SS = %02, xHCI = %02x\n",
       superspeed_ports, ehci2xhci_ports);
+}
+
+usb::xhci::Controller* xhc;
+
+__attribute((interrupt))
+void IntHandlerXHCI(InterruptFrame* frame){
+    while (xhc->PrimaryEventRing()->HasFront()){
+        if (auto err = ProcessEvent(*xhc)){
+            Log(kError, "Error while ProcessEvent: %s at %s:%d\n", err.Name(), err.File(), err.Line());
+        }
+    }
+
+    NotifyEndOfInterrupt();
 }
 
 extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
@@ -127,6 +143,17 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
     if (xhc_dev){
         Log(kInfo, "xHC has been found: %d.%d.%d\n", xhc_dev->bus, xhc_dev->device, xhc_dev->function);
     }
+
+    // #@@range_begin(load_idt)
+    const uint16_t cs = GetCS();
+    SetIDTEntry(idt[InterruptVector::kXHCI], MakeIDTAttr(DescriptorType::kInterruptGate, 0), reinterpret_cast<uint64_t>(IntHandlerXHCI), cs);
+    LoadIDT(sizeof(idt) - 1, reinterpret_cast<uintptr_t>(&idt[0]));
+    // #@@range_end(load_idt)
+
+    // #@@range_begin(configure_msi)
+    const uint8_t bsp_local_apic_id = *reinterpret_cast<const uint32_t*>(0xfee00020) >> 24;
+    pci::ConfigureMSIFixedDestination(*xhc_dev, bsp_local_apic_id, pci::MSITriggerMode::kLevel, pci::MSIDeliveryMode::kFixed, InterruptVector::kXHCI, 0);
+    // #@@range_end(configure_msi)
 
     // #@@range_begin(read_bar)
     const WithError<uint64_t> xhc_bar = pci::ReadBar(*xhc_dev, 0);
