@@ -19,6 +19,7 @@
 #include "memory_map.hpp"
 #include "segment.hpp"
 #include "paging.hpp"
+#include "memory_manager.hpp"
 #include "asmfunc.h"
 
 
@@ -45,6 +46,9 @@ int printk(const char* format, ...){
     console->PutString(s);
     return result;
 }
+
+char memory_manager_buf[sizeof(BitmapMemoryManager)];
+BitmapMemoryManager* memory_manager;
 
 char mouse_cursor_buf[sizeof(MouseCursor)];
 MouseCursor* mouse_cursor;
@@ -135,29 +139,29 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
     SetupIdentityPageTable();
     // #@@range_end(setup_segments_and_page)
 
-    const std::array available_memory_types{
-        MemoryType::kEfiBootServicesCode,
-        MemoryType::kEfiBootServicesData,
-        MemoryType::kEfiConventionalMemory
-    };
+    // #@@ange_begin(mark_allocated)
+    ::memory_manager = new(memory_manager_buf) BitmapMemoryManager;
 
+    const auto memory_map_base = reinterpret_cast<uintptr_t>(memory_map.buffer);
+    uintptr_t available_end = 0;
     // #@@range_begin(print_memory_map)
     printk("memory_map: %p\n", &memory_map);
-    for (uintptr_t iter = reinterpret_cast<uintptr_t>(memory_map.buffer);
-    iter < reinterpret_cast<uintptr_t>(memory_map.buffer) + memory_map.map_size;
+    for (uintptr_t iter = memory_map_base;
+    iter < memory_map_base + memory_map.map_size;
     iter += memory_map.descriptor_size){
-        auto desc = reinterpret_cast<MemoryDescriptor*>(iter);
-        for (int i=0;i<available_memory_types.size();i++){
-            if (desc->type == available_memory_types[i]){
-                printk("type = %u, phys = %08lx - %08lx, pages = %lu, attr = %08lx\n",
-                    desc->type,
-                    desc->physical_start,
-                    desc->physical_start + desc->number_of_pages * 4096 - 1,
-                    desc->number_of_pages,
-                    desc->attribute);
-            }
+        auto desc = reinterpret_cast<const MemoryDescriptor*>(iter);
+        if (available_end < desc->physical_start){
+            memory_manager->MarkAllocated(FrameID{available_end / kBytesPerFrame}, (desc->physical_start - available_end) / kBytesPerFrame);
+        }
+
+        const auto physical_end = desc->physical_start + desc->number_of_pages * kUEFIPageSize;
+        if (IsAvailable(static_cast<MemoryType>(desc->type))){
+            available_end = physical_end;
+        }else{
+            memory_manager->MarkAllocated(FrameID{desc->physical_start / kBytesPerFrame}, desc->number_of_pages * kUEFIPageSize / kBytesPerFrame);
         }
     }
+    memory_manager->SetMemoryRange(FrameID{1}, FrameID{available_end / kBytesPerFrame});
     // #@@range_end(print_memory_map)
 
     mouse_cursor = new(mouse_cursor_buf) MouseCursor{
