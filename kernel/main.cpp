@@ -118,6 +118,7 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
     DrawDesktop(*pixel_writer);
 
     console = new(console_buf) Console{*pixel_writer, kDesktopFGColor, kDesktopBGColor};
+    console->SetWriter(pixel_writer);
     printk("Welcome to mikanos\n");
     SetLogLevel(kWarn);
     // #@@range_end(new_console)
@@ -274,8 +275,8 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
         .Move({0, 0})
         .ID();
     mouse_layer_id = layer_manager->NewLayer()
-        .SetWindow(bgwindow)
-        .Move({0, 0})
+        .SetWindow(mouse_window)
+        .Move({200, 200})
         .ID();
 
     layer_manager->UpDown(bglayer_id, 0);
