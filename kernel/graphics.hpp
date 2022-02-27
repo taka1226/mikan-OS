@@ -77,3 +77,8 @@ void FillRectangle(PixelWriter& writer, const Vector2D<int>& pos, const Vector2D
 // #@@range_begin(drawRectangle)
 void DrawRectangle(PixelWriter& writer, const Vector2D<int>& pos, const Vector2D<int>& size, const PixelColor& c);
 // #@@range_end(drawRectangle)
+
+const PixelColor kDesktopBGColor{45, 118, 237};
+const PixelColor kDesktopFGColor{255, 255, 255};
+
+void DrawDesktop(PixelWriter& writer);
