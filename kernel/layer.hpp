@@ -12,6 +12,7 @@
 
 #include "graphics.hpp"
 #include "window.hpp"
+#include "frame_buffer.hpp"
 
 /** @brief Layer は一つのレイヤーを表す
 *
@@ -36,7 +37,7 @@ public:
     Layer& MoveRelative(Vector2D<int> pos_diff);
 
     /** @brief writer に現在設定されているウィンドウの内容を描画する。 */
-    void DrawTo(PixelWriter& writer) const;
+    void DrawTo(FrameBuffer& screen) const;
 
 private:
     unsigned int id_;
@@ -50,7 +51,7 @@ private:
 class LayerManager {
 public:
     /** @brief Draw メソッドなどで描画する際の描画先を設定する */
-    void SetWriter(PixelWriter* writer);
+    void SetWriter(FrameBuffer* screen);
 
     /** @brief 新しいレイヤーを生成して参照を返す。 */
     Layer& NewLayer();
@@ -76,7 +77,7 @@ public:
     void Hide(unsigned int id);
 
 private:
-    PixelWriter* writer_{nullptr};
+    FrameBuffer* screen_{nullptr};
     std::vector<std::unique_ptr<Layer>> layers_{};
     std::vector<Layer*> layer_stack_{};
     unsigned int latest_id_{0};

@@ -37,3 +37,7 @@ https://github.com/uchan-nos/mikanos/blob/osbook_day02b/MikanLoaderPkg/Main.c
 
 ## 注意事項
 - gBS->ExitBootServices の直前に Print() をはさんだだけでメモリを消費し、success exit できなくなるので注意
+
+
+## メモ
+- 9-a 描画速度 4294967295
