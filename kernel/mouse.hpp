@@ -1,12 +1,11 @@
 /**
-* @file mouse.hpp
-*
-*マウス制御プログラム
-*/
+ * @file mouse.hpp
+ *
+ * マウス制御プログラム．
+ */
 
 #pragma once
 
-// #@@range_begin(mouse_class)
 #include "graphics.hpp"
 
 const int kMouseCursorWidth = 15;

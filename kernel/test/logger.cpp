@@ -3,13 +3,9 @@
 #include <cstddef>
 #include <cstdio>
 
-#include "console.hpp"
-
 namespace {
   LogLevel log_level = kWarn;
 }
-
-extern Console* console;
 
 void SetLogLevel(LogLevel level) {
   log_level = level;
@@ -22,12 +18,10 @@ int Log(LogLevel level, const char* format, ...) {
 
   va_list ap;
   int result;
-  char s[1024];
 
   va_start(ap, format);
-  result = vsprintf(s, format, ap);
+  result = vprintf(format, ap);
   va_end(ap);
 
-  console->PutString(s);
   return result;
 }
