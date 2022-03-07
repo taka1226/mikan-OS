@@ -65,6 +65,8 @@ class Window {
   int Height() const;
 
   // #@@range_begin(fields)
+
+  void Move(Vector2D<int> dst_pos, const Rectangle<int>& src);
  private:
   int width_, height_;
   std::vector<std::vector<PixelColor>> data_{};
