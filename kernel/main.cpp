@@ -277,6 +277,14 @@ extern "C" void KernelMainNewStack(
       kMouseCursorWidth, kMouseCursorHeight, frame_buffer_config.pixel_format);
   mouse_window->SetTransparentColor(kMouseTransparentColor);
   DrawMouseCursor(mouse_window->Writer(), {0, 0});
+  mouse_position = {200, 200};
+
+  // #@@range_begin(make_window)
+  auto main_window = std::make_shared<Window>(160, 68, frame_buffer_config.pixel_format);
+  DrawWindow(*main_window->Writer(), "Hello Window");
+  WriteString(*main_window->Writer(), {24, 28}, "Welcome to", {0, 0, 0});
+  WriteString(*main_window->Writer(), {24, 44}, "MikanOS world!", {0, 0, 0});
+  // #@@range_end(make_window)
 
   // #@@range_begin(create_screen)
   FrameBuffer screen;
@@ -295,12 +303,20 @@ extern "C" void KernelMainNewStack(
     .ID();
   mouse_layer_id = layer_manager->NewLayer()
     .SetWindow(mouse_window)
-    .Move({200, 200})
+    .Move(mouse_position)
+    .ID();
+
+  // #@@range_begin(register_window)
+  auto main_window_layer_id = layer_manager->NewLayer()
+    .SetWindow(main_window)
+    .Move({300, 100})
     .ID();
 
   layer_manager->UpDown(bglayer_id, 0);
   layer_manager->UpDown(mouse_layer_id, 1);
+  layer_manager->UpDown(main_window_layer_id, 1);
   layer_manager->Draw();
+  // #@@range_end(register_window)
 
   while (true) {
     __asm__("cli");

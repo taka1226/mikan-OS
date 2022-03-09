@@ -45,13 +45,13 @@ Error FrameBuffer::Initialize(const FrameBufferConfig& config) {
 
     switch (config_.pixel_format) {
         case kPixelRGBResv8BitPerColor:
-        writer_ = std::make_unique<RGBResv8BitPerColorPixelWriter>(config_);
-        break;
+            writer_ = std::make_unique<RGBResv8BitPerColorPixelWriter>(config_);
+            break;
         case kPixelBGRResv8BitPerColor:
-        writer_ = std::make_unique<BGRResv8BitPerColorPixelWriter>(config_);
-        break;
+            writer_ = std::make_unique<BGRResv8BitPerColorPixelWriter>(config_);
+            break;
         default:
-        return MAKE_ERROR(Error::kUnknownPixelFormat);
+            return MAKE_ERROR(Error::kUnknownPixelFormat);
     }
 
     return MAKE_ERROR(Error::kSuccess);
@@ -82,7 +82,7 @@ Error FrameBuffer::Copy(Vector2D<int> dst_pos, const FrameBuffer& src) {
     for (int y = dst_start.y; y < dst_end.y; y++){
         memcpy(dst_buf, src_buf, bytes_per_pixel * (dst_end.x - dst_start.x));
         dst_buf += BytesPerScanLine(config_);
-        src_buf += BytesPerScanLine(config_);
+        src_buf += BytesPerScanLine(src.config_);
     }
 
     return MAKE_ERROR(Error::kSuccess);
