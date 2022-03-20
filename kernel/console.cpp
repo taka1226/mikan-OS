@@ -12,7 +12,7 @@
 
 Console::Console(const PixelColor& fg_color, const PixelColor& bg_color)
     : writer_{nullptr}, window_{}, fg_color_{fg_color}, bg_color_{bg_color},
-      buffer_{}, cursor_row_{0}, cursor_column_{0} {
+      buffer_{}, cursor_row_{0}, cursor_column_{0}, layer_id_{0} {
 }
 
 void Console::PutString(const char* s) {
@@ -26,9 +26,11 @@ void Console::PutString(const char* s) {
     }
     ++s;
   }
+  // #@@range_begin(draw_specific_layer)
   if (layer_manager) {
-    layer_manager->Draw();
+    layer_manager->Draw(layer_id_);
   }
+  // #@@range_end(draw_specific_layer)
 }
 
 void Console::SetWriter(PixelWriter* writer) {
@@ -40,20 +42,39 @@ void Console::SetWriter(PixelWriter* writer) {
   Refresh();
 }
 
+void Console::SetWindow(const std::shared_ptr<Window>& window) {
+  if (window == window_) {
+    return;
+  }
+  window_ = window;
+  writer_ = window->Writer();
+  Refresh();
+}
+
+// #@@range_begin(set_layer_id)
+void Console::SetLayerID(unsigned int layer_id) {
+  layer_id_ = layer_id;
+}
+
+unsigned int Console::LayerID() const {
+  return layer_id_;
+}
+// #@@range_end(set_layer_id)
+
 void Console::Newline() {
   cursor_column_ = 0;
   if (cursor_row_ < kRows - 1) {
-    cursor_row_++;
+    ++cursor_row_;
     return;
   }
-  if (window_){
-      Rectangle<int>move_src{{0, 16}, {8 * kColumns, 16 * (kRows - 1)}};
-      window_->Move({0, 0}, move_src);
-      FillRectangle(*writer_, {0, 16 * (kRows - 1)}, {8 * kColumns, 16}, bg_color_);
-  }
-  else {
+
+  if (window_) {
+    Rectangle<int> move_src{{0, 16}, {8 * kColumns, 16 * (kRows - 1)}};
+    window_->Move({0, 0}, move_src);
+    FillRectangle(*writer_, {0, 16 * (kRows - 1)}, {8 * kColumns, 16}, bg_color_);
+  } else {
     FillRectangle(*writer_, {0, 0}, {8 * kColumns, 16 * kRows}, bg_color_);
-    for (int row = 0; row < kRows - 1; row++) {
+    for (int row = 0; row < kRows - 1; ++row) {
       memcpy(buffer_[row], buffer_[row + 1], kColumns + 1);
       WriteString(*writer_, Vector2D<int>{0, 16 * row}, buffer_[row], fg_color_);
     }
@@ -62,16 +83,8 @@ void Console::Newline() {
 }
 
 void Console::Refresh() {
+  FillRectangle(*writer_, {0, 0}, {8 * kColumns, 16 * kRows}, bg_color_);
   for (int row = 0; row < kRows; ++row) {
     WriteString(*writer_, Vector2D<int>{0, 16 * row}, buffer_[row], fg_color_);
   }
-}
-
-void Console::SetWindow(const std::shared_ptr<Window>& window){
-    if (window == window_){
-        return;
-    }
-    window_ = window;
-    writer_ = window->Writer();
-    Refresh();
 }
