@@ -40,10 +40,17 @@ class Layer {
   /** @brief 指定された描画先にウィンドウの内容を描画する。 */
   void DrawTo(FrameBuffer& screen, const Rectangle<int>& area) const;
 
+  /** @brief draggable フラグをセットする */
+  Layer& SetDraggable(bool draggable);
+
+  /** @brief draggable フラグを取得する */
+  bool IsDraggable() const;
+
  private:
   unsigned int id_;
-  Vector2D<int> pos_;
-  std::shared_ptr<Window> window_;
+  Vector2D<int> pos_{};
+  std::shared_ptr<Window> window_{};
+  bool draggable_{false};
 };
 
 /** @brief LayerManager は複数のレイヤーを管理する。 */
