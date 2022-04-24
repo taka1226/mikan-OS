@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "interrupt.hpp"
 
 void InitializeLAPICTimer();
 void StartLAPICTimer();
