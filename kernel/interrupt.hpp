@@ -12,6 +12,7 @@
 
 #include "x86_descriptor.hpp"
 #include "message.hpp"
+#include "timer.hpp"
 
 union InterruptDescriptorAttribute {
   uint16_t data;
