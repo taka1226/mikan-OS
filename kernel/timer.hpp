@@ -39,3 +39,5 @@ inline bool operator<(const Timer& lhs, const Timer& rhs){
 }
 
 extern TimerManager* timer_manager;
+extern unsigned long lapic_timer_freq;
+const int kTimerFreq = 100;
